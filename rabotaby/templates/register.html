@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Регистрация
+{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width: 50%; margin: auto; display: flex; justify-content: center; align-items: center; height: 100vh;">
+<form method = "post">
+
+    <h1 class="h3 mb-3 fw-normal">Создайте новый аккаунт</h1>
+
+    <div class="form-floating">
+      <input type="text" name = "login" class="form-control" id="floatingInput" placeholder="Login">
+      <label for="floatingInput">Придумайте логин</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" name = "password" class="form-control" id="floatingPassword" placeholder="Password">
+      <label for="floatingPassword">Придумайте пароль</label>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+       {% if messages %}
+           <ul>
+               {% for category, message in messages %}
+                   <li class="{{ category }}">{{ message }}</li>
+               {% endfor %}
+           </ul>
+       {% endif %}
+{% endwith %}
+    <br>
+    <input type="submit" class = "btn btn-primary w-100 py-2" value="Зарегистрироваться">
+    <br>
+    <br>
+    <a href ="/log" class = "btn btn-success"> Авторизация</a>
+  </form>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+       {% if messages %}
+           <ul>
+               {% for category, message in messages %}
+                   <li class="{{ category }}">{{ message }}</li>
+               {% endfor %}
+           </ul>
+       {% endif %}
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{vacancy.name}}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="alert-info">
+        <br>
+        <h2>{{vacancy.name}}</h2>
+        <p>{{vacancy.salary}}</p>
+        <p>Компания: {{vacancy.company}}</p>
+        <p>Опыт работы: {{vacancy.experience}}</p>
+        <p>Тип занятости: {{vacancy.type}}</p>
+        <p>Требуемые знания: {{vacancy.technologies}}</p>
+        <p>Регион: {{vacancy.region}}</p>
+        <p>Дата публикации: {{vacancy.date}}</p>
+        <p>Ссылка на объявление работадателя: {{vacancy.link}}</p>
+<!--        <a href ="/" class = "btn btn-danger"> Сохранить </a>-->
+    </div>
+
+</div>
+{% endblock %}

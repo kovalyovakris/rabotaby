@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Профиль пользователя</h4>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Блок с фото -->
+                        <!-- Блок с фото -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center mb-3">
+                                <div style="width: 150px; margin: 0 auto;">
+                                    <img src="{% if user and user.photo_path %}{{ url_for('static', filename='uploads/' + user.photo_path) }}{% else %}data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=={% endif %}"
+                                         class="rounded-circle img-thumbnail"
+                                         style="width: 150px; height: 150px; object-fit: cover;"
+                                         alt="Фото профиля"
+                                         id="photoPreview">
+                                    <label class="btn btn-outline-primary btn-sm mt-2 w-100">
+                                        <i class="bi bi-camera"></i> Загрузить фото
+                                        <input type="file"
+                                               name="photo"
+                                               accept="image/*"
+                                               hidden
+                                               id="photoInput">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Основные поля -->
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Логин</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           name="login"
+                                           value="{{ login }}"
+                                           readonly
+                                           style="background-color: #f8f9fa;">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Имя</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           name="name"
+                                           value="{{ user.name if user else '' }}">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email"
+                                           class="form-control"
+                                           name="email"
+                                           value="{{ user.email if user else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Блок с документом -->
+                        <div class="mb-4">
+                            <label class="form-label">Документ (PDF/DOC)</label>
+                            <div class="input-group">
+                                <input type="file"
+                                       class="form-control"
+                                       name="document"
+                                       accept=".pdf,.doc,.docx"
+                                       id="docInput">
+                                {% if user and user.document_path %}
+                                <a href="{{ url_for('static', filename='uploads/' + user.document_path) }}"
+                                   class="btn btn-outline-success"
+                                   target="_blank">
+                                    <i class="bi bi-download"></i> Текущий документ
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+       {% if messages %}
+           <ul>
+               {% for category, message in messages %}
+                   <li class="{{ category }}">{{ message }}</li>
+               {% endfor %}
+           </ul>
+       {% endif %}
+{% endwith %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Сохранить изменения
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        if(this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('photoPreview').src = event.target.result;
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>
+{% endblock %}

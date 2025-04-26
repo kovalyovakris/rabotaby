@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Интерактивный тест{% endblock %}
+
+{% block body %}
+<style>
+    .custom-body {
+        background-color: #f8f9fa;
+        padding-top: 30px;
+    }
+    .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .btn-yes {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 10px 30px;
+        font-size: 1.2rem;
+    }
+    .btn-no {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        padding: 10px 30px;
+        font-size: 1.2rem;
+    }
+    .btn-yes:hover {
+        background-color: #218838;
+        border-color: #218838;
+    }
+    .btn-no:hover {
+        background-color: #c82333;
+        border-color: #c82333;
+    }
+    .header-section {
+        background: linear-gradient(to right, #4e54c8, #8f94fb);
+        color: white;
+        padding: 50px 0;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .question-text {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+    }
+    .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="custom-body">
+    <div class="container">
+        <div class="header-section text-center">
+            <h1>Интерактивный психологический тест</h1>
+            <p class="lead">Узнайте больше о подходящей вам профессии из области IT через простые вопросы</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h2 class="card-title mb-4">Добро пожаловать!</h2>
+                        <p class="card-text">
+                            Этот тест поможет определить подходящую
+                            вам профессию из области IT.
+                            Тест состоит из 25 вопросов.
+                        </p>
+
+                        <div class="start-question mt-5">
+                            <p class="question-text">Желаете пройти тест?</p>
+                            <div class="btn-container">
+                                <a href ="/start-test" type="submit" class="btn btn-yes">Да </a>
+                                <a href ="/main" type="submit" class="btn btn-no"> Нет </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты теста{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .header-section {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+        }
+        .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        height: 400px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+        .result-info {
+            padding: 30px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        .profession-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .prof-category {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .people-oriented {
+            background-color: rgba(92, 184, 92, 0.1);
+            border-left: 4px solid rgba(92, 184, 92, 1);
+        }
+        .tech-oriented {
+            background-color: rgba(240, 173, 78, 0.1);
+            border-left: 4px solid rgba(240, 173, 78, 1);
+        }
+        .creative {
+            background-color: rgba(91, 192, 222, 0.1);
+            border-left: 4px solid rgba(91, 192, 222, 1);
+        }
+        .hybrid {
+            background-color: rgba(217, 83, 79, 0.1);
+            border-left: 4px solid rgba(217, 83, 79, 1);
+        }
+        .profession-card {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .profession-card h5 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        .profession-card .small {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .coord-range {
+            font-size: 0.75rem;
+            color: #6c757d;
+            display: block;
+            margin-top: 3px;
+        }
+        .retake-btn-container {
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="header-section">
+                        <h1 class="text-center">Результаты вашего теста</h1>
+                    </div>
+                    <div class="card-body text-center p-4">
+                        <h2 class="mb-4">Ваш результат</h2>
+
+                        <div class="chart-container">
+                            <canvas id="resultChart"></canvas>
+                        </div>
+
+                        <div class="result-info">
+                            <h3>Итоговая позиция: ({{ x|round(2) }}, {{ y|round(2) }})</h3>
+                            <div class="mt-4">
+                                <h4>{{ profession.name }}</h4>
+                                <p class="fs-5">{{ profession.description }}</p>
+                                <p class="fs-5 fw-bold">{{ profession.recommendation }}</p>
+                            </div>
+                        </div>
+
+                        <div class="profession-grid">
+                            <div class="prof-category people-oriented">
+                                <h4>Ориентация на людей</h4>
+                                <div class="profession-card">
+                                    <h5>IT Recruiter <span class="coord-range"></span></h5>
+                                    <p class="small">Работа с кандидатами, проведение собеседований</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Project Manager <span class="coord-range"></span></h5>
+                                    <p class="small">Управление проектами и командами</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>HR Generalist <span class="coord-range"></span></h5>
+                                    <p class="small">Работа с персоналом по всем направлениям</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Technical Trainer <span class="coord-range"></span></h5>
+                                    <p class="small">Обучение техническим навыкам</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Scrum Master <span class="coord-range"></span></h5>
+                                    <p class="small">Фасилитация процессов в agile-командах</p>
+                                </div>
+                            </div>
+
+                            <div class="prof-category tech-oriented">
+                                <h4>Технические профессии</h4>
+                                <div class="profession-card">
+                                    <h5>DevOps Engineer <span class="coord-range"></span></h5>
+                                    <p class="small">Автоматизация процессов разработки</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Backend Developer <span class="coord-range"></span></h5>
+                                    <p class="small">Разработка серверной части</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>System Administrator <span class="coord-range"></span></h5>
+                                    <p class="small">Обслуживание инфраструктуры</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Cyber Security Specialist <span class="coord-range"></span></h5>
+                                    <p class="small">Защита систем и данных</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Cloud Architect <span class="coord-range"></span></h5>
+                                    <p class="small">Проектирование облачных инфраструктур</p>
+                                </div>
+                            </div>
+
+                            <div class="prof-category creative">
+                                <h4>Творческие профессии</h4>
+                                <div class="profession-card">
+                                    <h5>UX/UI Designer <span class="coord-range"></span></h5>
+                                    <p class="small">Дизайн пользовательских интерфейсов</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Game Dev / 3D Artist <span class="coord-range"></span></h5>
+                                    <p class="small">Создание игр и 3D-графики</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Digital Marketer <span class="coord-range"></span></h5>
+                                    <p class="small">Продвижение продуктов в цифровой среде</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Technical Writer <span class="coord-range"></span></h5>
+                                    <p class="small">Создание технической документации</p>
+                                </div>
+                            </div>
+
+                            <div class="prof-category hybrid">
+                                <h4>Гибридные профессии</h4>
+                                <div class="profession-card">
+                                    <h5>Product Manager <span class="coord-range"></span></h5>
+                                    <p class="small">Управление жизненным циклом продукта</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Business Analyst <span class="coord-range"></span></h5>
+                                    <p class="small">Анализ бизнес-потребностей</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Frontend Developer <span class="coord-range"></span></h5>
+                                    <p class="small">Разработка пользовательских интерфейсов</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Fullstack Developer <span class="coord-range"></span></h5>
+                                    <p class="small">Полный цикл разработки</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Data Scientist <span class="coord-range"></span></h5>
+                                    <p class="small">Анализ больших данных</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>AI Prompt Engineer <span class="coord-range"></span></h5>
+                                    <p class="small">Работа с ИИ и языковыми моделями</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>IT Consultant <span class="coord-range"></span></h5>
+                                    <p class="small">Консультации по IT-решениям</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Customer Support Engineer <span class="coord-range"></span></h5>
+                                    <p class="small">Техническая поддержка клиентов</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Sales Engineer <span class="coord-range"></span></h5>
+                                    <p class="small">Технические продажи IT-решений</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>QA Engineer <span class="coord-range"></span></h5>
+                                    <p class="small">Обеспечение качества ПО</p>
+                                </div>
+                                <div class="profession-card">
+                                    <h5>Data Analyst <span class="coord-range"></span></h5>
+                                    <p class="small">Анализ данных для бизнеса</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="retake-btn-container">
+                            <a href ="/test" class="btn btn-primary btn-lg mt-4">Пройти тест заново </a>
+<!--                            <a href="{{ url_for('testWindow') }}" class="btn btn-primary btn-lg mt-4">Пройти тест заново</a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    // Регистрируем кастомный плагин для подписей осей
+    Chart.register({
+        id: 'axisLabelsPlugin',
+        afterDraw: (chart) => {
+            const {ctx, chartArea: {left, right, top, bottom, width, height}} = chart;
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = '#555';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Подписи оси X (горизонтальной)
+            ctx.fillText('Гуманитарный', left + width * 0.25, top - 20);
+            ctx.fillText('Технический', left + width * 0.75, top - 20);
+
+            // Подписи оси Y (вертикальной)
+            ctx.save();
+            ctx.translate(left - 30, top + height * 0.25);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Люди', 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(left - 30, top + height * 0.75);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Машины', 0, 0);
+            ctx.restore();
+        }
+    });
+
+    // Настройка графика результатов
+    const ctx = document.getElementById('resultChart').getContext('2d');
+    const finalX = {{ x }};
+    const finalY = {{ y }};
+
+    // Создаем график
+    const chart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Ваша позиция',
+                data: [{x: finalX, y: finalY}],
+                backgroundColor: 'rgba(100, 50, 150, 1)',
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 2,
+                pointRadius: 10,
+                pointHoverRadius: 12
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+            padding: {
+                left: 40,
+                right: 40,
+                top: 40,  // Увеличиваем отступ сверху
+                bottom: 40
+            }
+        },
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'center',
+                    min: -5,
+                    max: 5,
+                    ticks: {
+                        display: false // Скрываем цифры на оси X
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawTicks: false
+                    },
+                    title: {
+                        display: false // Отключаем стандартный заголовок
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    position: 'center',
+                    min: -5,
+                    max: 5,
+                    ticks: {
+                        display: false // Скрываем цифры на оси Y
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawTicks: false
+                    },
+                    title: {
+                        display: false // Отключаем стандартный заголовок
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        filter: item => item.text === 'Ваша позиция',
+                        font: {
+                            size: 14
+                        },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 14
+                    },
+                    callbacks: {
+                        label: context => `X: ${context.parsed.x.toFixed(2)}, Y: ${context.parsed.y.toFixed(2)}`
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
