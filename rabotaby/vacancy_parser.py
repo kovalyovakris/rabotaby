@@ -4,11 +4,9 @@ import pandas as pd
 import time
 import os
 import re
-import csv
 from urllib.parse import urljoin
-import unicodedata
 
-# настройки
+# Настройки
 BASE_URL = "https://rabota.by/search/vacancy"
 VACANCY_BASE_URL = "https://rabota.by"
 SEARCH_PARAMS = {
@@ -147,13 +145,11 @@ def parse_vacancies(html): # из html возвращает данные
 
             # зп
             salary_elem = vacancy.select_one("span.magritte-text___pbpft_3-0-32.magritte-text_style-primary___AQ7MW_3-0-32.magritte-text_typography-label-1-regular___pi3R-_3-0-32")
-            salary = salary_elem.get_text(strip=True) if salary_elem else "Не указана"
+            salary = salary_elem.get_text(separator=' ', strip=True) if salary_elem else "Не указана"
 
             # работодатель
             employer_elem = vacancy.select_one("span[data-qa='vacancy-serp__vacancy-employer-text']")
-            raw_employer = employer_elem.get_text(strip=True)
-            employer = unicodedata.normalize('NFKC', raw_employer)
-            employer = re.sub(r'[\xa0\u00a0\u202f]+', ' ', employer)
+            employer = employer_elem.get_text(separator=' ', strip=True)
 
             # город
             address_elem = vacancy.select_one("span[data-qa='vacancy-serp__vacancy-address']")
