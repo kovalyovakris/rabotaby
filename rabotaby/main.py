@@ -112,7 +112,7 @@ def main_window():
                 document.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 document_path = filename
 
-# обновляем инфу о пользователе
+        # обновляем инфу о пользователе
         new_login = request.form['login']
         if new_login != current_user.login:
             if User.query.filter(User.login == new_login).first():
@@ -184,6 +184,22 @@ def vacancy_list_details(name):
 def testWindow():
     return render_template('index.html')
 
+# Функция для группировки профессий по категориям
+def group_professions_by_category():
+    categories = {
+        "people-oriented": [],
+        "tech-oriented": [],
+        "creative": [],
+        "hybrid": []
+    }
+
+    for prof in professions:
+        category = prof.get("category", "hybrid")  # По умолчанию считаем гибридной
+        if category in categories:
+            categories[category].append(prof)
+
+    return categories
+
 
 @app.route('/start-test', methods=['GET', 'POST'])# начало теста
 @login_required
@@ -208,29 +224,37 @@ def question():
         session['answers'].append(answer)
         # обновляем положение точки
         current_question = session['current_question']
-        shift = questions[current_question]['shifts'][answer]
-        session['position_x'] += shift[0]
-        session['position_y'] += shift[1]
-        # добавляем новую позицию в путь
-        path = session['path']
-        path.append((session['position_x'], session['position_y']))
-        session['path'] = path
-        # Переходим к следующему вопросу
-        session['current_question'] += 1
-        # если вопросы закончились, переходим к результатам
+        if current_question < len(questions):
+            shift = questions[current_question]['shifts'].get(answer, (0, 0))
+            session['position_x'] += shift[0]
+            session['position_y'] += shift[1]
+
+            # Добавляем новую позицию в путь
+            session['path'].append((session['position_x'], session['position_y']))
+
+            # Переходим к следующему вопросу
+            session['current_question'] += 1
+
+        # Если вопросы закончились, переходим к результатам
         if session['current_question'] >= len(questions):
             return redirect(url_for('result'))
 
-    # отображаем текущий вопрос
-    current_question = session['current_question']
+        # Отображаем текущий вопрос
+        current_question = session.get('current_question', 0)
+        if current_question >= len(questions):
+        return redirect(url_for('result'))
+
+    progress_percent = (current_question / len(questions)) * 100
+
     return render_template(
         'question.html',
         question=questions[current_question],
         question_number=current_question + 1,
         total_questions=len(questions),
-        x=session['position_x'],
-        y=session['position_y'],
-        path=session['path']
+        x=session.get('position_x', 0),
+        y=session.get('position_y', 0),
+        path=session.get('path', [(0, 0)]),
+        progress_percent=progress_percent
     )
 
 
@@ -238,30 +262,50 @@ def question():
 @login_required
 def result():
     if 'position_x' not in session or 'position_y' not in session:
-        return redirect(url_for('index'))
+    return redirect(url_for('index'))
+
     x = session['position_x']
     y = session['position_y']
-    profession = None
-    for prof in professions:
-        x_min, x_max = prof["x_range"]
-        y_min, y_max = prof["y_range"]
-        if x_min <= x <= x_max and y_min <= y <= y_max:
-            profession = prof
-            break
 
-    if not profession:
-        profession = {
-            "name": "Не определено",
-            "description": "Ваши результаты не попадают в конкретную профессиональную категорию.",
-            "recommendation": "Рассмотрите смежные профессии или развивайте навыки в нескольких направлениях."
-        }
+    # Находим наиболее подходящую профессию
+    profession = find_best_profession(x, y)
+
+    # Группируем профессии по категориям для отображения
+    categorized_professions = group_professions_by_category()
+
+    # Находим 3 ближайшие альтернативные профессии
+    alternative_professions = []
+    for prof in professions:
+        if prof['name'] != profession['name']:
+            x_min, x_max = prof["x_range"]
+            y_min, y_max = prof["y_range"]
+
+            # Находим центр диапазона профессии
+            center_x = (x_min + x_max) / 2
+            center_y = (y_min + y_max) / 2
+
+            # Расстояние до центра профессии
+            distance = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
+
+            alternative_professions.append({
+                'name': prof['name'],
+                'distance': distance,
+                'description': prof.get('description', '')
+            })
+
+    # Сортируем по расстоянию и берем 3 ближайшие
+    alternative_professions.sort(key=lambda p: p['distance'])
+    alternative_professions = alternative_professions[:3]
 
     return render_template(
         'result.html',
         x=x,
         y=y,
-        path=session['path'],
-        profession=profession
+        path=session.get('path', [(0, 0)]),
+        profession=profession,
+        professions=professions,
+        categorized_professions=categorized_professions,
+        alternative_professions=alternative_professions
     )
 
 
